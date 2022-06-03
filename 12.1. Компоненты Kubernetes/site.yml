@@ -1,0 +1,67 @@
+---
+- name: Install Python
+  hosts: all
+  gather_facts: false
+  pre_tasks:
+  - name: install python
+    become: true
+    raw: 'apt install -y python'
+  tags: python
+- name: Install
+  hosts: nodes
+  tasks:
+    - name: TEST
+      uri:
+        url: https://storage.googleapis.com/kubernetes-release/release/stable.txt
+        return_content: yes
+      register: response
+    - name: DOWNLOAD kubectl
+      get_url:
+        url: https://storage.googleapis.com/kubernetes-release/release/{{ response.content }}/bin/linux/amd64/kubectl
+        dest: /tmp/kubectl
+        mode: '0644'   
+    - name: Change rights kubectl
+      become: true
+      file:
+        path: /tmp/kubectl
+        owner: root
+        group: root
+        mode: '0755'
+    - name: MOVING
+      become: true
+      command: 'mv /tmp/kubectl /usr/local/bin/kubectl'
+    - name: UBUNTU UPDATE CACHE
+      become: true
+      apt:
+        update_cache: yes
+    - name: Install DOCKER
+      become: true
+      apt:
+        pkg:
+        - docker.io
+        - conntrack
+        - socat
+    - name: Download minicube
+      get_url:
+        url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        dest: /tmp/minikube
+        mode: '0644'  
+    - name: Change rights minikube
+      become: true
+      file:
+        path: /tmp/minikube
+        owner: root
+        group: root
+        mode: '0755'        
+    - name: MOVE minicube to BIN
+      become: true
+      command: 'mv /tmp/minikube /usr/local/bin/'
+    - name: SYSCTL
+      become: true
+      ansible.posix.sysctl:
+        name: fs.protected_regular
+        value: '0'
+        sysctl_set: yes
+    - name: MINICUBE START
+      become: true
+      command: 'minikube start --vm-driver=none &'      
