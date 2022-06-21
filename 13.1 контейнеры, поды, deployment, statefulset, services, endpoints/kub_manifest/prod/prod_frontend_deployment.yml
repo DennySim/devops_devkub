@@ -1,0 +1,39 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod-app-frontend
+  labels:
+    app: prod-frontend
+spec:
+  selector:
+    matchLabels:
+      app: prod-frontend
+  template:
+    metadata:
+      labels:
+        app: prod-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: httpd
+        ports:
+        - containerPort: 80
+        env:
+        - name: backend_url
+          value: backend.default.svc.cluster.local
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  labels:
+    app: prod-frontend
+spec:    
+  type: ClusterIP
+  ports:
+    - targetPort: 80
+      port: 8000
+  selector:
+    app: prod-frontend

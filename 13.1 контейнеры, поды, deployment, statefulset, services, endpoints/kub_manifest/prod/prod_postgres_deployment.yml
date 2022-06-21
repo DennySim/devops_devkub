@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod-app-postgres
+  labels:
+    app: prod-db
+spec:
+  selector:
+    matchLabels:
+      app: prod-db
+  template:
+    metadata:
+      labels:
+        app: prod-db
+    spec:
+      containers:
+        - name: postgres-db
+          image: postgres:13-alpine
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_DB
+              value: news
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db
+  labels:
+    app: prod-db
+spec:    
+  type: ClusterIP
+  ports:
+    - targetPort: 5432
+      port: 5432
+  selector:
+    app: prod-db 

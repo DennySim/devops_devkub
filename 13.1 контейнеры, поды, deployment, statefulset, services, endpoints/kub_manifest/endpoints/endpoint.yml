@@ -1,0 +1,24 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: external-2ip
+spec:
+  ports:
+    - name: web
+      protocol: TCP
+      port: 8888
+      targetPort: 80
+
+
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: external-2ip
+subsets:
+  - addresses:
+      - ip: 195.201.201.32
+    ports:
+      - port: 80
+        name: web

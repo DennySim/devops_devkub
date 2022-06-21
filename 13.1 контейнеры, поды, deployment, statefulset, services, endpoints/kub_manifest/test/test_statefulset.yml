@@ -1,0 +1,40 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db
+  labels:
+    app: test-db
+spec:
+  type: ClusterIP
+  ports:
+    - targetPort: 5432
+      port: 5432
+  selector:
+      app: test-db
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: test-postgres-db
+spec:
+  serviceName: postgres-db
+  selector:
+    matchLabels:
+      app: test-db
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: test-db
+    spec:
+      containers:
+        - name: postgres-db
+          image: postgres:13-alpine
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: postgres
+            - name: POSTGRES_DB
+              value: news
