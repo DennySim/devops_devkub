@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod-app-frontend
+  labels:
+    app: prod-frontend
+spec:
+
+  selector:
+    matchLabels:
+      app: prod-frontend
+  template:
+    metadata:
+      labels:
+        app: prod-frontend
+    spec:
+      volumes:
+      - name: volume01
+        persistentVolumeClaim:
+          claimName: pvc-prod
+      containers:
+      - name: frontend
+        image: httpd
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - mountPath: "/static"
+            name: volume01
+  
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod-app-backend
+  labels:
+    app: prod-backend
+spec:
+  selector:
+    matchLabels:
+      app: prod-backend
+  template:
+    metadata:
+      labels:
+        app: prod-backend
+    spec:
+      volumes:
+      - name: volume01
+        persistentVolumeClaim:
+          claimName: pvc-prod   
+      containers:
+      - name: backend
+        image: httpd
+        ports:
+        - containerPort: 80
+        volumeMounts:
+          - mountPath: "/static"
+            name: volume01
+       
+
+      
