@@ -1,0 +1,35 @@
+{{- range $index, $val := .Values.images }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $val.name }}-{{ $.Chart.AppVersion | replace "." "-" }}
+  labels:
+    app: {{ $val.name }}-{{ $.Chart.AppVersion | replace "." "-" }}
+spec:
+  replicas: {{ $.Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ $val.name }}-{{ $.Chart.AppVersion | replace "." "-" }}
+  template:
+    metadata:
+      labels:
+        app: {{ $val.name }}-{{ $.Chart.AppVersion | replace "." "-" }}
+    spec:
+      containers:
+        - name: {{ $val.name }}-{{ $.Chart.AppVersion | replace "." "-" }}
+          image: {{ $val.repository }}
+          ports:
+            - name: http
+              containerPort: {{ $val.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+{{- end }}   

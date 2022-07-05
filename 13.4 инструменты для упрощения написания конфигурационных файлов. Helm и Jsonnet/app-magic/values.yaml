@@ -1,0 +1,25 @@
+# Default values for app-magic.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+images:
+  - frontend:
+    name: frontend
+    repository: httpd
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    port: 80
+    tag: ""
+  - backend:
+    name: backend
+    repository: bitnami/prometheus
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    port: 9090
+    tag: ""
+
+
+service:
+  type: ClusterIP

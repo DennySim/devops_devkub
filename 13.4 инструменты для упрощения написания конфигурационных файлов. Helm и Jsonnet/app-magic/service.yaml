@@ -1,0 +1,18 @@
+{{- range $index, $val := .Values.images }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $val.name }}
+  labels:
+    app: {{ $val.name }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ $val.port }}
+      targetPort: {{ $val.port }}
+      protocol: TCP
+  selector:
+    app: {{ $val.name }}
+{{- end }}  
